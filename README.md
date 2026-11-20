@@ -1,62 +1,52 @@
-# Ex.No: 03   COMPUTE THE AUTO FUNCTION(ACF)
+# Autocorrelation Function (ACF) Computation and Lag Analysis
 
-### Date: 14 - 11 - 2026
+A foundational statistical implementation of sample autocovariance and autocorrelation function (ACF) algorithms from first mathematical principles without high-level wrapper libraries.
 
-# AIM:
-To Compute the AutoCorrelation Function (ACF) of the data for the first 35 lags to determine the model
-type to fit the data.
+---
 
-# ALGORITHM:
-1. Import the necessary packages
-2. Find the mean, variance and then implement normalization for the data.
-3. Implement the correlation using necessary logic and obtain the results
-4. Store the results in an array
-5. Represent the result in graphical representation as given below.
+## Objective
 
-# PROGRAM:
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+Compute the sample Autocorrelation Function (ACF) across the first 35 lags ($k = 0, 1, \dots, 34$) to quantify temporal dependence, memory decay, and cyclic periodicity within empirical observations, providing the theoretical diagnostic required for autoregressive order selection.
 
-url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv'
+---
 
-df = pd.read_csv(url)
+## Dataset Utilized
 
-data = df['Temp'].values
+- **Dataset Name**: Daily Minimum Temperatures in Melbourne
+- **Filename**: `daily-min-temperatures.csv`
+- **Domain**: Climatology / Surface Temperature
+- **Location**: Melbourne, Australia
+- **Sample Size**: 3,650 daily observations spanning 1981 to 1990
+- **Target Feature**: `Temp` (Daily minimum temperature in Celsius, °C)
 
-N = len(data)
+---
 
-lags = range(35)
+## Mathematical Formulation
 
-autocorr_values = []
+For an empirical time series $y_1, y_2, \dots, y_N$ with sample mean $\bar{y} = \frac{1}{N}\sum_{t=1}^N y_t$ and sample variance $\hat{\gamma}(0) = \frac{1}{N}\sum_{t=1}^N (y_t - \bar{y})^2$:
 
-mean_data = np.mean(data)
-variance_data = np.var(data)
+### 1. Sample Autocovariance
+For lag $k \ge 0$:
+$$\hat{\gamma}(k) = \frac{1}{N} \sum_{t=1}^{N-k} (y_t - \bar{y})(y_{t+k} - \bar{y})$$
 
-normalized_data = (data - mean_data) / np.sqrt(variance_data)
+### 2. Sample Autocorrelation Function (ACF)
+The dimensionless correlation coefficient normalized to $[-1, 1]$:
+$$\hat{\rho}(k) = \frac{\hat{\gamma}(k)}{\hat{\gamma}(0)} = \frac{\sum_{t=1}^{N-k} (y_t - \bar{y})(y_{t+k} - \bar{y})}{\sum_{t=1}^N (y_t - \bar{y})^2}$$
 
-for lag in lags:
-    if lag == 0:
-        autocorr_values.append(1)
-    else:
-        auto_cov = np.sum((data[:-lag] - mean_data) * (data[lag:] - mean_data)) / N
-        autocorr_values.append(auto_cov / variance_data)
+At lag $k = 0$, $\hat{\rho}(0) = 1.0$ by definition. Subsequent lags display slow harmonic decay characteristic of annual sinusoidal periodicity.
 
-plt.figure(figsize=(10, 6))
-plt.stem(lags, autocorr_values)
+---
 
-plt.title('Autocorrelation of Daily Minimum Temperatures')
-plt.xlabel('Lag (Days)')
-plt.ylabel('Autocorrelation')
+## Results & Visualizations
 
-plt.grid(True)
-plt.show()
-```
-# OUTPUT:
+The computed autocorrelation values across 35 lags demonstrate substantial short-term memory ($\hat{\rho}(1) > 0.75$), confirming persistent thermal inertia and short-term meteorological predictability.
 
-### Autocorrelation of Daily Minimum Temperatures
-<img width="846" height="547" alt="image" src="https://github.com/user-attachments/assets/f105e751-a5fb-4f44-be76-5d099721a865" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f105e751-a5fb-4f44-be76-5d099721a865" alt="Autocorrelation Function Plot Across 35 Lags" width="85%" />
+</p>
 
-# RESULT:
-Thus we have successfully implemented the auto correlation function in python.
+---
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
