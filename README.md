@@ -1,52 +1,64 @@
-# Autocorrelation Function (ACF) Computation and Lag Analysis
+# Ex.No: 03 COMPUTE THE AUTOCORRELATION FUNCTION (ACF)
 
-A foundational statistical implementation of sample autocovariance and autocorrelation function (ACF) algorithms from first mathematical principles without high-level wrapper libraries.
+### Date: 14 - 11 - 2026
 
----
+# AIM:
+To compute the Autocorrelation Function (ACF) of the time series data for the first 35 lags to determine the temporal dependence and model type.
 
-## Objective
+# DATASET:
+- **Dataset Name**: Daily Minimum Temperatures in Melbourne (`daily-min-temperatures.csv`)
+- **Sample Size**: 3,650 daily observations across 10 years (1981–1990)
 
-Compute the sample Autocorrelation Function (ACF) across the first 35 lags ($k = 0, 1, \dots, 34$) to quantify temporal dependence, memory decay, and cyclic periodicity within empirical observations, providing the theoretical diagnostic required for autoregressive order selection.
+# ALGORITHM:
+1. Import the necessary packages (numpy, pandas, matplotlib).
+2. Load the Daily Minimum Temperatures dataset using pandas.
+3. Calculate sample mean and variance, and normalize the data.
+4. Compute the sample autocovariance and autocorrelation across lags 0 to 34 from first principles.
+5. Plot the ACF stem plot and display the results.
 
----
+# PROGRAM:
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-## Dataset Utilized
+url = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv'
 
-- **Dataset Name**: Daily Minimum Temperatures in Melbourne
-- **Filename**: `daily-min-temperatures.csv`
-- **Domain**: Climatology / Surface Temperature
-- **Location**: Melbourne, Australia
-- **Sample Size**: 3,650 daily observations spanning 1981 to 1990
-- **Target Feature**: `Temp` (Daily minimum temperature in Celsius, °C)
+df = pd.read_csv(url)
 
----
+data = df['Temp'].values
 
-## Mathematical Formulation
+N = len(data)
 
-For an empirical time series $y_1, y_2, \dots, y_N$ with sample mean $\bar{y} = \frac{1}{N}\sum_{t=1}^N y_t$ and sample variance $\hat{\gamma}(0) = \frac{1}{N}\sum_{t=1}^N (y_t - \bar{y})^2$:
+lags = range(35)
 
-### 1. Sample Autocovariance
-For lag $k \ge 0$:
-$$\hat{\gamma}(k) = \frac{1}{N} \sum_{t=1}^{N-k} (y_t - \bar{y})(y_{t+k} - \bar{y})$$
+autocorr_values = []
 
-### 2. Sample Autocorrelation Function (ACF)
-The dimensionless correlation coefficient normalized to $[-1, 1]$:
-$$\hat{\rho}(k) = \frac{\hat{\gamma}(k)}{\hat{\gamma}(0)} = \frac{\sum_{t=1}^{N-k} (y_t - \bar{y})(y_{t+k} - \bar{y})}{\sum_{t=1}^N (y_t - \bar{y})^2}$$
+mean_data = np.mean(data)
+variance_data = np.var(data)
 
-At lag $k = 0$, $\hat{\rho}(0) = 1.0$ by definition. Subsequent lags display slow harmonic decay characteristic of annual sinusoidal periodicity.
+normalized_data = (data - mean_data) / np.sqrt(variance_data)
 
----
+for lag in lags:
+    if lag == 0:
+        autocorr_values.append(1)
+    else:
+        auto_cov = np.sum((data[:-lag] - mean_data) * (data[lag:] - mean_data)) / N
+        autocorr_values.append(auto_cov / variance_data)
 
-## Results & Visualizations
+plt.figure(figsize=(10, 6))
+plt.stem(lags, autocorr_values)
+plt.title('Autocorrelation of Daily Minimum Temperatures')
+plt.xlabel('Lag')
+plt.ylabel('Autocorrelation')
+plt.grid(True)
+plt.show()
+```
 
-The computed autocorrelation values across 35 lags demonstrate substantial short-term memory ($\hat{\rho}(1) > 0.75$), confirming persistent thermal inertia and short-term meteorological predictability.
+# OUTPUT:
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/f105e751-a5fb-4f44-be76-5d099721a865" alt="Autocorrelation Function Plot Across 35 Lags" width="85%" />
-</p>
+### Autocorrelation of Daily Minimum Temperatures
+<img width="846" height="547" alt="image" src="https://github.com/user-attachments/assets/f105e751-a5fb-4f44-be76-5d099721a865" />
 
----
-
-## License
-
-This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+# RESULT:
+Thus, the Autocorrelation Function (ACF) has been computed and visualized successfully in Python.
